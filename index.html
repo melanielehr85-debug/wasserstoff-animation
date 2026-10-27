@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="de">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Wasserstoff · Elektronensprünge und Energie</title>
+<style>
+:root{font-family:system-ui,sans-serif;color:#172e46;background:#edf3f7;font-size:16px}*{box-sizing:border-box}body{margin:0}main{max-width:1200px;margin:auto;padding:28px}h1{font-size:clamp(1.7rem,4vw,2.5rem);margin:8px 0}h2{font-size:1.15rem;margin:0 0 12px}p{line-height:1.55}header p{max-width:850px;color:#486177}.eyebrow{font-size:.8rem;letter-spacing:.12em;text-transform:uppercase;color:#376274}.controls{display:flex;flex-wrap:wrap;align-items:end;gap:16px;padding:20px;background:white;border-radius:14px;margin:22px 0}label{display:grid;gap:7px}select,button{font:inherit;min-height:44px;padding:9px 14px;border:1px solid #9aafbd;border-radius:7px;background:white;color:inherit}button{cursor:pointer}button.primary{background:#12667b;color:white;border-color:#12667b}button:disabled{opacity:.55;cursor:default}button:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid #db7d19;outline-offset:3px}.panels{display:grid;grid-template-columns:1fr 1fr;gap:20px}.panel,.derivation{background:white;border-radius:14px;padding:20px;min-width:0}svg{width:100%;height:auto;display:block}svg text{font-family:system-ui,sans-serif;fill:#29475d;font-size:13px}.caption{font-size:.87rem;color:#4b6377;margin-bottom:0}.status{min-height:3em;line-height:1.5;padding:12px 0;font-weight:600}.derivation{margin-top:20px}.steps{display:grid;grid-template-columns:1fr 1fr 1.4fr;gap:16px}.step{padding:14px;background:#f1f6f8;border-radius:8px;line-height:1.7}.step b{display:block;font-size:.85rem;color:#486177}.formula{font-size:1.15rem;font-variant-numeric:tabular-nums}.result{background:#e6f4f3}.progress{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-top:16px}.progress input{flex:1;min-width:150px;accent-color:#12667b}.note{border-left:3px solid #d28a2b;padding-left:14px}details{margin-top:18px;line-height:1.6}summary{cursor:pointer;font-weight:600}li{margin:8px 0}@media(max-width:760px){main{padding:16px}.panels,.steps{grid-template-columns:1fr}.controls{gap:12px}.panel{padding:14px}}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}.controls{margin-top:0}
+.spectrum-panel{margin-top:20px}.spectrum-track{position:relative;height:112px;background:#090e18;margin:32px 8px 0;border-radius:6px}.spectral-line{position:absolute;top:12px;bottom:12px;width:3px;transform:translateX(-50%);background:var(--line);box-shadow:0 0 8px var(--line)}.spectral-line span{position:absolute;top:-35px;left:50%;transform:translateX(-50%);font-weight:600;color:#29475d}.spectrum-axis{position:relative;height:40px;margin:0 8px;border-top:1px solid #617a8c}.spectrum-tick{position:absolute;top:0;transform:translateX(-50%);padding-top:10px;font-size:13px}.spectrum-tick:before{content:'';position:absolute;top:0;left:50%;height:6px;border-left:1px solid #617a8c}.spectrum-tick:last-child{transform:translateX(-100%)}.axis-title{text-align:right;font-size:.87rem;margin:0 8px 18px}.line-answers{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px}.line-answer{padding:12px;background:#f1f6f8;border-radius:8px}.line-answer h3{font-size:1rem;margin:0 0 12px}.line-answer label{font-size:.9rem;margin-top:10px}.line-answer input{font:inherit;min-width:0;width:100%;padding:8px;border:1px solid #9aafbd;border-radius:5px;background:white;color:#172e46}@media print{.controls{display:none}.spectrum-track{print-color-adjust:exact;-webkit-print-color-adjust:exact}.panel{break-inside:avoid}}
+.line-answer input.correct{background:#e3f5e9;border-color:#258044;color:#14572b}.line-answer input.incorrect{background:#fde8e8;border-color:#ba3333;color:#842323}.answer-feedback{font-size:.85rem;min-height:1.3em}.answer-feedback.correct{color:#14572b}.answer-feedback.incorrect{color:#842323}</style></head>
+<body><main>
+
+<section class="controls" aria-label="Übergang einstellen">
+<label for="start">Startniveau<select id="start"></select></label><label for="target">Zielniveau<select id="target"></select></label>
+<button id="play" class="primary">Übergang starten</button><button id="reset">Zurück zum Start</button>
+<label for="speed">Animationsdauer<select id="speed"><option value="2400">Normal · 2,4 s</option><option value="4800">Langsam · 4,8 s</option></select></label>
+</section>
+<div class="panels">
+<section class="panel"><h2>Atommodell</h2><svg id="atom" viewBox="0 0 480 430" role="img" aria-label="Schematisches Schalenmodell des Wasserstoffatoms"><g id="shells"></g><circle cx="240" cy="215" r="14" fill="#c5643f"/><text x="240" y="220" text-anchor="middle" style="fill:white;font-size:18px">+</text><path id="atomArrow" fill="none" stroke="#d28a2b" stroke-width="3" marker-end="url(#arrowA)"/><defs><marker id="arrowA" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0L10 5L0 10Z" fill="#d28a2b"/></marker></defs><circle id="electron" r="8" fill="#12667b" stroke="white" stroke-width="2"/><text id="electronLabel" text-anchor="middle">e⁻</text><g id="photon"><path id="wave" fill="none" stroke="#a24a91" stroke-width="2.5"/><text id="photonLabel" text-anchor="middle" style="fill:#803775">Photon</text></g></svg><p class="caption">Schalen und Übergang schematisch. Wellenlängen zur Übersicht gestaucht: kürzere Wellen bedeuten höhere Photonenergie.</p></section>
+<section class="panel"><h2>Energieniveaus <span style="font-weight:400">· E in eV</span></h2><svg id="energy" viewBox="0 0 480 430" role="img" aria-label="Energieniveaudiagramm mit linearer Energieskala"><defs><marker id="arrowE" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#d28a2b"/></marker></defs><path d="M65 400V20" stroke="#617a8c" stroke-width="1.5"/><text x="18" y="20">E / eV</text><g id="levels"></g><path id="energyArrow" stroke="#d28a2b" stroke-width="3" marker-end="url(#arrowE)"/><circle id="energyElectron" r="7" fill="#12667b" stroke="white" stroke-width="2"/><text id="deltaLabel" x="250" style="font-size:15px;font-weight:600"></text></svg><p class="caption">Eₙ = −13,6 eV / n² · Lineare Energieskala. Animierte Zwischenpositionen sind keine erlaubten Energieniveaus.</p></section>
+</div>
+
+<div id="status" class="sr-only" role="status" aria-live="polite"></div>
+<section class="panel spectrum-panel" aria-labelledby="spectrum-heading">
+<h2 id="spectrum-heading">Emissionsspektrum des Wasserstoffs · sichtbarer Bereich</h2>
+<p>Ordne den Linien A–D mithilfe der Animation jeweils eine Wellenlänge und einen Elektronenübergang zu. Starte dazu verschiedene Übergänge und vergleiche die Photonwellenlängen mit den Positionen im Spektrum. Trage den Übergang als „n=… n=…“ ein; ein Pfeil ist nicht nötig. Wellenlängen werden mit ±1 nm Toleranz geprüft.</p>
+<div id="spectrum-track" class="spectrum-track" role="img" aria-label="Vier farbige Emissionslinien A bis D auf einer linearen Wellenlängenskala von 380 bis 700 Nanometern. Zuordnung mithilfe der Animation."></div>
+<div class="spectrum-axis" aria-hidden="true"><span class="spectrum-tick" style="left:6.25%">400</span><span class="spectrum-tick" style="left:37.5%">500</span><span class="spectrum-tick" style="left:68.75%">600</span><span class="spectrum-tick" style="left:100%">700</span></div>
+<p class="axis-title">Wellenlänge λ / nm →</p>
+<div id="line-answers" class="line-answers"></div>
+<p class="caption">Dargestellt sind die vier sichtbaren Balmerlinien, die mit den Niveaus n = 1 bis 6 dieser Simulation erreichbar sind. Weitere Wasserstofflinien liegen unter anderem im Ultraviolett und Infrarot. Linienfarben und Helligkeiten sind schematisch; Positionen folgen der Energieformel der Simulation.</p>
+</section>
+</main>
+<script>
+'use strict';
+const $=id=>document.getElementById(id), NS='http://www.w3.org/2000/svg';
+const energy=n=>-13.6/(n*n), radius=n=>28+n*27, yEnergy=e=>35-e*25;
+const fmt=(n,d=3)=>n.toLocaleString('de-DE',{minimumFractionDigits:d,maximumFractionDigits:d});
+let progress=0, running=false, frame=0, last=0, started=false;
+function svg(tag,attrs,parent,text){const el=document.createElementNS(NS,tag);for(const [k,v] of Object.entries(attrs))el.setAttribute(k,v);if(text!==undefined)el.textContent=text;parent.appendChild(el);return el;}
+for(let n=1;n<=6;n++){for(const id of ['start','target']){const o=document.createElement('option');o.value=n;o.textContent='n = '+n;$(id).appendChild(o);}svg('circle',{cx:240,cy:215,r:radius(n),fill:'none',stroke:'#c9d7e0','stroke-width':1.2,'data-n':n},$('shells'));svg('text',{x:240+radius(n)*0.707,y:210-radius(n)*0.707,'text-anchor':'middle'},$('shells'),'n='+n);}
+$('start').value=3;$('target').value=2;
+function values(){const a=+$('start').value,b=+$('target').value;return {a,b,ea:energy(a),eb:energy(b),delta:Math.abs(energy(a)-energy(b))};}
+function stop(){running=false;cancelAnimationFrame(frame);$('play').textContent=progress>=1?'Erneut abspielen':'Übergang starten';}
+function describe(){const {a,b,delta}=values();$('status').textContent=a===b?'Gleiches Niveau: kein Übergang, kein Photon.':progress===0?`Bereit: n = ${a} → n = ${b} · ${b>a?'Absorption':'Emission'}`:progress>=1?`Ziel erreicht: n = ${b}. Ein Photon mit ${fmt(delta)} eV wurde ${b>a?'aufgenommen':'abgegeben'}.`:`Schematischer Übergang n = ${a} → n = ${b} · beide Ansichten laufen synchron.`;}
+function draw(){if(!running)$('play').textContent=progress>=1?'Erneut abspielen':'Übergang starten';const {a,b,ea,eb,delta}=values(),t=progress,r=radius(a)+(radius(b)-radius(a))*t;const x=240+r;
+$('electron').setAttribute('cx',x);$('electron').setAttribute('cy',215);$('electronLabel').setAttribute('x',x);$('electronLabel').setAttribute('y',240);
+$('atomArrow').setAttribute('d',a===b?'':`M${240+radius(a)} 215L${240+radius(b)} 215`);
+$('energyArrow').setAttribute('d',!started||a===b?'':`M205 ${yEnergy(ea)}V${yEnergy(eb)}`);
+$('energyElectron').setAttribute('cx',205);$('energyElectron').setAttribute('cy',yEnergy(ea)+(yEnergy(eb)-yEnergy(ea))*t);
+$('deltaLabel').setAttribute('x',80);$('deltaLabel').setAttribute('y',410);$('deltaLabel').textContent=started&&a!==b?`ΔE = |EStart − EZiel| = ${fmt(delta)} eV`:'';
+for(const c of $('shells').querySelectorAll('circle')){const n=+c.dataset.n;c.setAttribute('stroke',n===a||n===b?'#12667b':'#c9d7e0');c.setAttribute('stroke-width',n===a||n===b?2:1.2);}
+const visible=started&&a!==b&&t>0;$('photon').style.visibility=visible?'visible':'hidden';
+const lambda=delta?1239.841984/delta:0;
+// Logarithmic visual scale keeps UV and IR waves distinguishable in one panel.
+const shortest=1239.841984/(13.6*(1-1/36)),longest=1239.841984/(13.6*(1/25-1/36));
+const period=delta?10+70*Math.log(lambda/shortest)/Math.log(longest/shortest):10;
+const px=b>a?90+150*t:240+150*t,py=350;let path='';
+for(let i=0;i<=160;i++){const envelope=Math.sin(Math.PI*i/160);path+=(i?'L':'M')+(px+i-80)+' '+(py+12*envelope*Math.sin(2*Math.PI*i/period));}
+$('wave').setAttribute('d',path);$('wave').dataset.wavelengthNm=lambda;$('wave').dataset.visualPeriod=period;
+$('photonLabel').setAttribute('x',240);$('photonLabel').setAttribute('y',410);$('photonLabel').textContent=`${b>a?'Absorption':'Emission'} · λ ≈ ${fmt(lambda,1)} nm`;
+}
+
+function update(){stop();progress=0;started=false;const {a,b,ea,eb,delta}=values();$('levels').replaceChildren();
+svg('line',{x1:65,y1:35,x2:445,y2:35,stroke:'#9aafbd','stroke-dasharray':'4 4'},$('levels'));svg('text',{x:75,y:23},$('levels'),'0 · Ionisationsgrenze');
+for(let n=1;n<=6;n++){const e=energy(n),y=yEnergy(e),active=n===a||n===b;svg('line',{x1:80,y1:y,x2:230,y2:y,stroke:active?'#12667b':'#b2c3ce','stroke-width':active?2.5:1},$('levels'));const labelY=n===6?50:n===5?72:n===4?94:n===3?116:n===2?154:y+4;svg('path',{d:`M230 ${y}L278 ${labelY-4}`,stroke:'#b2c3ce',fill:'none'},$('levels'));svg('text',{x:284,y:labelY},$('levels'),`n = ${n} · ${fmt(e,2)} eV${n===a&&n===b?' · Start = Ziel':n===a?' · Start':n===b?' · Ziel':''}`);}
+$('play').disabled=a===b;draw();describe();}
+function tick(now){if(!running)return;progress=Math.min(1,progress+(now-last)/+$('speed').value);last=now;draw();if(progress>=1){stop();describe();}else frame=requestAnimationFrame(tick);}
+$('play').addEventListener('click',()=>{if(running){stop();$('play').textContent='Fortsetzen';return;}if(progress>=1)progress=0;started=true;running=true;draw();last=performance.now();$('play').textContent='Pause';describe();frame=requestAnimationFrame(tick);});
+$('reset').addEventListener('click',()=>{stop();progress=0;started=false;draw();describe();});
+for(const id of ['start','target'])$(id).addEventListener('change',update);
+document.addEventListener('visibilitychange',()=>{if(document.hidden&&running){stop();describe();}});
+
+// Same energy model as the animation; no automatic solution labels.
+const spectrumLines=[6,5,4,3].map((n,i)=>({id:'ABCD'[i],start:n,lambda:1239.841984/Math.abs(energy(n)-energy(2)),color:['#a07bff','#7766ff','#36dbef','#ff5252'][i]}));
+for(const line of spectrumLines){
+ const mark=document.createElement('div');mark.className='spectral-line';mark.style.left=((line.lambda-380)/320*100)+'%';mark.style.setProperty('--line',line.color);mark.dataset.wavelengthNm=line.lambda;
+ const tag=document.createElement('span');tag.textContent=line.id;mark.appendChild(tag);$('spectrum-track').appendChild(mark);
+ const answer=document.createElement('div');answer.className='line-answer';
+ answer.innerHTML=`<h3>Linie ${line.id}</h3><label for="lambda-${line.id}">Wellenlänge λ / nm<input id="lambda-${line.id}" type="text" inputmode="decimal" autocomplete="off"></label><label for="transition-${line.id}">Elektronenübergang (Start, Ziel)<input id="transition-${line.id}" type="text" placeholder="n=… n=…" autocomplete="off"></label>`;
+ $('line-answers').appendChild(answer);
+ for(const kind of ['lambda','transition']){
+  const field=$(kind+'-'+line.id), feedback=document.createElement('span');
+  feedback.id=field.id+'-feedback';feedback.className='answer-feedback';feedback.setAttribute('aria-live','polite');
+  field.setAttribute('aria-describedby',feedback.id);field.after(feedback);
+  field.addEventListener('input',()=>{
+   const raw=field.value.trim();let correct=false;
+   if(kind==='lambda'){
+    const numeric=raw.replace(/\s*nm\s*$/i,'').trim().replace(',','.');
+    correct=/^\d+(?:\.\d+)?$/.test(numeric)&&Math.abs(Number(numeric)-line.lambda)<=1;
+   }else{
+    const match=raw.toLowerCase().replace(/\s+/g,'').match(/^n=(\d+)(?:→|->|,|;)?n=(\d+)$/);
+    correct=!!match&&Number(match[1])===line.start&&Number(match[2])===2;
+   }
+   field.classList.toggle('correct',!!raw&&correct);field.classList.toggle('incorrect',!!raw&&!correct);
+   if(raw)field.setAttribute('aria-invalid',String(!correct));else field.removeAttribute('aria-invalid');
+   feedback.className='answer-feedback'+(raw?(correct?' correct':' incorrect'):'');
+   feedback.textContent=raw?(correct?'✓ Richtig':'✗ Noch nicht richtig'):'';
+  });
+ }
+
+}
+
+update();
+</script></body></html>
+
+
